@@ -1,7 +1,8 @@
 <template>
   <div>
+  
     <div class="d-flex justify-content-center table-wrap ">
-      <div class="per-page bg-dark rounded-top d-flex align-items-center px-3 justify-content-end">
+      <!-- <div class="per-page bg-dark rounded-top d-flex align-items-center px-3 justify-content-end">
         <div class="wrap-select d-flex">
           <p class="text-select">Per page</p>
           <select v-model="todosPerPage" class="form-select form-select-sm my-1 select-custom bg-dark text-white" style="width: auto;border: none;padding: 0 25px 0 10px;margin-top: 0px !important;">
@@ -11,8 +12,11 @@
             <option value="all">All</option>
           </select>
         </div>
+      </div> -->
+      <div class="d-flex justify-content-end" style="margin:10px 0 -15px 0">
+        <a class="btn btn-primary " href="/create">create</a>
       </div>
-      <table class="table table-dark text-white custom-table my-0" style="max-width: 94%;"> 
+      <table class="table table-striped text-white custom-table" style="max-width: 94%;"> 
         <thead>
           <tr>
             <th scope="col">No</th>
@@ -22,9 +26,8 @@
         </thead>
         <tbody>
           <tr v-for="(todo, index) in paginatedTodos" :key="todo.id">
-            <th v-if="todosPerPage === 'all'" scope="row">{{ index + 1 }}</th>
-            <th v-else scope="row">{{ index + 1 + ((currentPage - 1) * parseInt(todosPerPage)) }}</th>
-            <td>{{ todo.title }}</td>
+            <th scope="row">{{ ((currentPage - 1) * perPage) + index + 1 }}</th>
+            <td :key="todo.id">{{ todo.title }}</td>
             <td>
               <button class="btn btn-primary btn-sm mx-2" @click="editTodo(todo)"><i class="bi bi-pencil-square"></i></button>
               <button class="btn btn-danger btn-sm" @click="deleteTodo(todo.id)"><i class="bi bi-trash-fill"></i></button>
@@ -32,16 +35,17 @@
           </tr>
         </tbody>
       </table>
-      <nav aria-label="Page navigation example" class="bg-dark my-0">
-      <ul class="pagination justify-content-end text-black">
-        <li class="page-item" v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }">
-          <a class="page-link text-black" href="#" @click.prevent="setPage(page)">{{ page }}</a>
-        </li>
-      </ul>
-    </nav>
+      <b-pagination
+      v-model="currentPage"
+      :total-rows="todos.length"
+      :per-page="perPage"
+      first-text="⏮"
+      prev-text="⏪"
+      next-text="⏩"
+      last-text="⏭"
+      class="mt-3"
+    ></b-pagination>
     </div>
-
-  
   </div>
 </template>
 <style>
@@ -71,12 +75,16 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+import { BPagination } from 'bootstrap-vue-3';
 
 export default {
+  components: {
+    BPagination
+  },
   data() {
     return {
       currentPage: 1,
-      todosPerPage: '20',
+      perPage: 10, 
   }
 },
   computed: {
@@ -85,8 +93,8 @@ export default {
       if (this.todosPerPage === 'all') {
         return this.todos;
       } else {
-        const start = (this.currentPage - 1) * parseInt(this.todosPerPage);
-        const end = start + parseInt(this.todosPerPage);
+        const start = (this.currentPage - 1) * parseInt(this.perPage);
+        const end = start + parseInt(this.perPage);
         return this.todos.slice(start, end);
       }
     },
@@ -106,7 +114,9 @@ export default {
   methods: {
     ...mapActions(["fetchTodos"]),
     editTodo(todo) {
-      console.log(`Mengedit todo: ${todo.title}`);
+      const todoId = todo.id;
+
+      this.$router.push({ name: 'update', params: { id: todoId } });
     },
     deleteTodo(todoId) {
       console.log(`Menghapus todo dengan ID: ${todoId}`);
@@ -114,6 +124,14 @@ export default {
     setPage(pageNumber) {
       this.currentPage = pageNumber;
     },
+    async updateTodoAndFetch(todo) {
+      try {
+        await this.$store.dispatch('updateTodo', todo); // Memanggil action updateTodo untuk memperbarui todo
+        await this.fetchTodos(); // Memanggil action fetchTodos untuk memperbarui daftar todos
+      } catch (error) {
+        console.error('Gagal memperbarui todo:', error);
+      }
+    }
   },
   created() {
     this.fetchTodos();

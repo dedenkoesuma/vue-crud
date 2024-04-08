@@ -1,10 +1,29 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view />
+<div>
+  <b-navbar toggleable="lg" type="dark" variant="info">
+    <b-navbar-brand href="#">Vue Js</b-navbar-brand>
+
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+    <b-collapse id="nav-collapse" is-nav>
+
+    </b-collapse>
+  </b-navbar>
+</div>
+<router-view></router-view>
 </template>
+
+
+<script>
+import { BNavbar, BNavbarBrand } from 'bootstrap-vue-3';
+export default {
+  components: {
+    BNavbar,
+    BNavbarBrand
+  }
+}
+
+</script>
 
 <style>
 #app {
