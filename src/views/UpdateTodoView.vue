@@ -5,12 +5,13 @@
         <div>
           <label for="title" class="mx-2">Title:</label>
           <input type="text" id="title" v-model="todo.title">
+          <button type="submit" class="btn btn-primary mx-2">Update</button>
         </div>
         <div>
           <label for="completed">Completed:</label>
           <input type="checkbox" id="completed" class="my-2" v-model="todo.completed">
         </div>
-        <button type="submit" class="btn btn-primary my-2">Update</button>
+        
       </form>
     </div>
   </template>
