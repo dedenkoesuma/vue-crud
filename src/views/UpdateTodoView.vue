@@ -1,16 +1,16 @@
 <template>
     <div>
       <h1>Edit Todo</h1>
-      <form @submit.prevent="submitUpdateTodo">
+      <form @submit.prevent="submitUpdateTodo" class="form-group">
         <div>
-          <label for="title">Title:</label>
+          <label for="title" class="mx-2">Title:</label>
           <input type="text" id="title" v-model="todo.title">
         </div>
         <div>
           <label for="completed">Completed:</label>
-          <input type="checkbox" id="completed" v-model="todo.completed">
+          <input type="checkbox" id="completed" class="my-2" v-model="todo.completed">
         </div>
-        <button type="submit">Update</button>
+        <button type="submit" class="btn btn-primary my-2">Update</button>
       </form>
     </div>
   </template>

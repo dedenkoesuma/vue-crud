@@ -27,10 +27,10 @@
         <tbody>
           <tr v-for="(todo, index) in paginatedTodos" :key="todo.id">
             <th scope="row">{{ ((currentPage - 1) * perPage) + index + 1 }}</th>
-            <td :key="todo.id">{{ todo.title }}</td>
+            <td>{{ todo.title }}</td>
             <td>
               <button class="btn btn-primary btn-sm mx-2" @click="editTodo(todo)"><i class="bi bi-pencil-square"></i></button>
-              <button class="btn btn-danger btn-sm" @click="deleteTodo(todo.id)"><i class="bi bi-trash-fill"></i></button>
+              <button class="btn btn-danger btn-sm" @click="confirmDelete(todo.id)"><i class="bi bi-trash-fill"></i></button>
             </td>
           </tr>
         </tbody>
@@ -112,26 +112,30 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["fetchTodos"]),
+    ...mapActions(["fetchTodos", "deleteTodo"]),
+    confirmDelete(todoId) {
+      if (window.confirm("Anda yakin ingin menghapus todo ini?")) {
+        this.deleteTodoItem(todoId);
+      }
+    },
     editTodo(todo) {
       const todoId = todo.id;
 
       this.$router.push({ name: 'update', params: { id: todoId } });
     },
-    deleteTodo(todoId) {
-      console.log(`Menghapus todo dengan ID: ${todoId}`);
+    deleteTodoItem(todoId) {
+      this.deleteTodo(todoId)
+        .then(() => {
+          this.fetchTodos();
+        })
+        .catch((error) => {
+          console.error("Gagal menghapus todo:", error);
+        });
     },
+
     setPage(pageNumber) {
       this.currentPage = pageNumber;
     },
-    async updateTodoAndFetch(todo) {
-      try {
-        await this.$store.dispatch('updateTodo', todo); // Memanggil action updateTodo untuk memperbarui todo
-        await this.fetchTodos(); // Memanggil action fetchTodos untuk memperbarui daftar todos
-      } catch (error) {
-        console.error('Gagal memperbarui todo:', error);
-      }
-    }
   },
   created() {
     this.fetchTodos();
